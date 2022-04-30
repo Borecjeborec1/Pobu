@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "node-gyp rebuild"
+    "build": "node-gyp rebuild",
+    "github": "node ./helpers/github.js"
   },
   "author": "borecjeborec1",
   "license": "MIT",
