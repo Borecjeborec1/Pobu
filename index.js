@@ -51,5 +51,26 @@ function parse(content) {
 }
 
 function interpret(parsed) {
+  for (let i = 0; i < parsed.length; ++i) {
+    let block = parsed[i]
+    if (block[0].startsWith("on")) {
+      let events = block[0].split(" ")
+      let event = block[0].split(" ").length > 2 ? events[2] : events[1]
+      switch (event) {
+        case "start":
+          // start
+          break;
+        case "press":
+          // press
+          break;
+        case "release":
+          // release
+          break;
+        case "input":
+          // input
+          break;
+      }
+    }
+  }
   console.log(parsed)
 }
