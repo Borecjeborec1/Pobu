@@ -13,6 +13,7 @@
   "gypfile": true,
   "dependencies": {
     "bindings": "^1.5.0",
+    "lepikevents": "^1.5.2",
     "nexe": "^4.0.0-beta.19",
     "node-addon-api": "^4.3.0"
   }

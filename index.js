@@ -1,5 +1,6 @@
 const pobu = require('./lib/pobu.js')
 const fs = require('fs')
+const lepikevents = require("lepikevents")
 
 let args = process.argv.slice(2)
 if (args.length < 1) {
@@ -35,6 +36,8 @@ function parse(content) {
   let lines = content.split("\r\n")
   let parsedLines = []
   for (let i = lines.length - 1; i >= 0; --i) {
+    if (lines[i].startsWith("//"))
+      lines.splice(i, 1)
     lines[i] = lines[i].trim()
     if (!lines[i]) {
       lines[i] = "block end"
@@ -56,9 +59,10 @@ function interpret(parsed) {
     if (block[0].startsWith("on")) {
       let events = block[0].split(" ")
       let event = block[0].split(" ").length > 2 ? events[2] : events[1]
+      let doables = block.slice(1, block.length)
       switch (event) {
         case "start":
-          // start
+          simulate(doables)
           break;
         case "press":
           // press
@@ -69,8 +73,30 @@ function interpret(parsed) {
         case "input":
           // input
           break;
+        case "click":
+          lepikevents.events.on("mouseClick", () => {
+            simulate(doables)
+          })
+          break;
+        case "doubleClick":
+          lepikevents.events.on("mouseDoubleClick", () => {
+            simulate(doables)
+          })
       }
     }
   }
   console.log(parsed)
+}
+
+function simulate(codeBlock) {
+  for (let i = 0; i < codeBlock.length; ++i) {
+    let codes = codeBlock[i].split(" ")
+    switch (codes[0]) {
+      case "press":
+        pobu.keyTap(codes[1])
+        break
+      case "write":
+        break
+    }
+  }
 }
