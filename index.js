@@ -58,17 +58,30 @@ function interpret(parsed) {
     let block = parsed[i]
     if (block[0].startsWith("on")) {
       let events = block[0].split(" ")
-      let event = block[0].split(" ").length > 2 ? events[2] : events[1]
+      let event = events[1]
+      let eventButton = events[2] || null
       let doables = block.slice(1, block.length)
       switch (event) {
         case "start":
           simulate(doables)
           break;
         case "press":
-          // press
+          lepikevents.events.on("keyPress", (key) => {
+            if (key == eventButton) {
+              simulate(doables)
+              if (isLetterInBlock(doables, eventButton))
+                eventButton = null
+            }
+          })
           break;
         case "release":
-          // release
+          lepikevents.events.on("keyRelease", (key) => {
+            if (key == eventButton) {
+              simulate(doables)
+              if (isLetterInBlock(doables, eventButton))
+                eventButton = null
+            }
+          })
           break;
         case "input":
           // input
@@ -85,7 +98,6 @@ function interpret(parsed) {
       }
     }
   }
-  console.log(parsed)
 }
 
 function simulate(codeBlock) {
@@ -100,4 +112,13 @@ function simulate(codeBlock) {
         break
     }
   }
+}
+function isLetterInBlock(block, letter) {
+  for (let i = 0; i < block.length; ++i) {
+    let codes = block[i].split(" ")
+    if (codes[1].includes(letter)) {
+      return true
+    }
+  }
+  return false
 }
