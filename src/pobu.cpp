@@ -3,19 +3,16 @@
 #include <Windows.h>
 
 Napi::Value KeyTap(const Napi::CallbackInfo &info) {
-  // simulate key tap
   Napi::Env env = info.Env();
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments")
         .ThrowAsJavaScriptException();
     return env.Null();
   }
-
   if (!info[0].IsNumber()) {
     Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
     return env.Null();
   }
-
   int arg0 = info[0].As<Napi::Number>();
   INPUT ip;
   ip.type = INPUT_KEYBOARD;

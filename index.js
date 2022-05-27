@@ -96,6 +96,7 @@ function simulate(codeBlock) {
         pobu.keyTap(codes[1])
         break
       case "write":
+        pobu.write(codes[1].split(""))
         break
     }
   }
