@@ -100,7 +100,7 @@ function interpret(parsed) {
   }
 }
 
-function simulate(codeBlock) {
+async function simulate(codeBlock) {
   for (let i = 0; i < codeBlock.length; ++i) {
     let codes = codeBlock[i].split(" ")
     switch (codes[0]) {
@@ -110,6 +110,8 @@ function simulate(codeBlock) {
       case "write":
         pobu.write(codes[1].split(""))
         break
+      case "sleep":
+        await sleep(codes[1])
     }
   }
 }
@@ -121,4 +123,8 @@ function isLetterInBlock(block, letter) {
     }
   }
   return false
+}
+
+const sleep = (ms) => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
