@@ -59,7 +59,7 @@ function interpret(parsed) {
     if (block[0].startsWith("on")) {
       let events = block[0].split(" ")
       let event = events[1]
-      let eventButton = events[2] || null
+      let eventButton = events[2]
       let doables = block.slice(1, block.length)
       switch (event) {
         case "start":
@@ -67,20 +67,14 @@ function interpret(parsed) {
           break;
         case "press":
           lepikevents.events.on("keyPress", (key) => {
-            if (key == eventButton) {
+            if (key == eventButton)
               simulate(doables)
-              if (isLetterInBlock(doables, eventButton))
-                eventButton = null
-            }
           })
           break;
         case "release":
           lepikevents.events.on("keyRelease", (key) => {
-            if (key == eventButton) {
+            if (key == eventButton)
               simulate(doables)
-              if (isLetterInBlock(doables, eventButton))
-                eventButton = null
-            }
           })
           break;
         case "input":
@@ -110,19 +104,17 @@ async function simulate(codeBlock) {
       case "write":
         pobu.write(codes[1].split(""))
         break
+      case "move":
+        if (codes[1] == "relative") {
+          pobu.mouseMove(+codes[2], +codes[3], false)
+        } else {
+          pobu.mouseMove(+codes[1], +codes[2])
+        }
+        break
       case "sleep":
         await sleep(codes[1])
     }
   }
-}
-function isLetterInBlock(block, letter) {
-  for (let i = 0; i < block.length; ++i) {
-    let codes = block[i].split(" ")
-    if (codes[1].includes(letter)) {
-      return true
-    }
-  }
-  return false
 }
 
 const sleep = (ms) => {
