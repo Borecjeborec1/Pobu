@@ -1,8 +1,10 @@
 #include <napi.h>
 #include <iostream>
 #include <Windows.h>
-
-Napi::Value KeyTap(const Napi::CallbackInfo &info) {
+int normalizePixels(int num, int screenSize) {
+  return num * 65536 / screenSize;
+}
+Napi::Value Key_tap(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments")
@@ -22,13 +24,35 @@ Napi::Value KeyTap(const Napi::CallbackInfo &info) {
   ip.ki.wVk = arg0;
   ip.ki.dwFlags = 0;
   SendInput(1, &ip, sizeof(INPUT));
-  Napi::Number num = Napi::Number::New(env, arg0);
-  return num;
+  return Napi::Boolean::New(env, true);
+}
+Napi::Value Mouse_move(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  if (info.Length() != 2) {
+    Napi::TypeError::New(env, "Wrong number of arguments")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  int dx = info[0].As<Napi::Number>();
+  int dy = info[1].As<Napi::Number>();
+
+  INPUT Inputs[1] = {0};
+
+  Inputs[0].type = INPUT_MOUSE;
+  Inputs[0].mi.dx = normalizePixels(dx, GetSystemMetrics(SM_CXSCREEN));
+  Inputs[0].mi.dy = normalizePixels(dy, GetSystemMetrics(SM_CYSCREEN));
+  Inputs[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+
+  SendInput(1, Inputs, sizeof(INPUT));
+  return Napi::Boolean::New(env, true);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set(Napi::String::New(env, "keyTap"),
-              Napi::Function::New(env, KeyTap));
+              Napi::Function::New(env, Key_tap));
+  exports.Set(Napi::String::New(env, "mouseMove"),
+              Napi::Function::New(env, Mouse_move));
   return exports;
 }
 
