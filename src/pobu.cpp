@@ -1,9 +1,8 @@
 #include <napi.h>
 #include <iostream>
 #include <Windows.h>
-int normalizePixels(int num, int screenSize) {
-  return num * 65536 / screenSize;
-}
+#include "func.hpp"
+
 Napi::Value Key_tap(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
   if (info.Length() != 1) {

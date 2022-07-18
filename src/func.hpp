@@ -1,0 +1,1 @@
+int normalizePixels(int, int);

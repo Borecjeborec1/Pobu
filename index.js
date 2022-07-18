@@ -21,7 +21,7 @@ function main() {
 function read(filePath) {
   if (fs.existsSync(filePath)) {
     let data = fs.readFileSync(filePath, 'utf8')
-    return data.toString()
+    return data.toString().trim()
   } else {
     console.log(`File ${filePath} not found.
   Searched in: ${process.cwd()}
@@ -39,10 +39,7 @@ function parse(content) {
     if (lines[i].startsWith("//"))
       lines.splice(i, 1)
     lines[i] = lines[i].trim()
-    if (!lines[i]) {
-      lines[i] = "block end"
-    }
-    if ("block end".indexOf(lines[i]) !== -1) {
+    if (!lines[i]) { // enter meaning
       let block = lines.slice(i + 1, lines.length)
       if (!block.length) break
       parsedLines.unshift(lines.splice(i + 1, lines.length - i));
