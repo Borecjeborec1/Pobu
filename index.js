@@ -74,8 +74,16 @@ function interpret(parsed) {
               simulate(doables)
           })
           break;
-        case "input":
-          // input
+        case "write":
+          let clickedHotkeys = ""
+          lepikevents.events.on("keyPress", (key) => {
+            if (key.length == 1)
+              clickedHotkeys += key
+            if (clickedHotkeys.includes(eventButton)) {
+              clickedHotkeys = ""
+              simulate(doables)
+            }
+          })
           break;
         case "click":
           lepikevents.events.on("mouseClick", () => {
@@ -93,23 +101,26 @@ function interpret(parsed) {
 
 async function simulate(codeBlock) {
   for (let i = 0; i < codeBlock.length; ++i) {
-    let codes = codeBlock[i].split(" ")
-    switch (codes[0]) {
-      case "press":
-        pobu.keyTap(codes[1])
-        break
-      case "write":
-        pobu.write(codes[1].split(""))
-        break
-      case "move":
-        if (codes[1] == "relative") {
-          pobu.mouseMove(+codes[2], +codes[3], false)
-        } else {
-          pobu.mouseMove(+codes[1], +codes[2])
-        }
-        break
-      case "sleep":
-        await sleep(codes[1])
+    let multiplier = codeBlock[i].match(/x\d+/) != null ? codeBlock[i].match(/x\d+/)[0].replace("x", "") : 1
+    for (let j = 0; j < multiplier; ++j) {
+      let codes = codeBlock[i].split(" ")
+      switch (codes[0]) {
+        case "press":
+          pobu.keyTap(codes[1])
+          break
+        case "write":
+          pobu.write(codes[1].split(""))
+          break
+        case "move":
+          if (codes[1] == "relative") {
+            pobu.mouseMove(+codes[2], +codes[3], false)
+          } else {
+            pobu.mouseMove(+codes[1], +codes[2])
+          }
+          break
+        case "sleep":
+          await sleep(codes[1])
+      }
     }
   }
 }
