@@ -1,7 +1,7 @@
 {
   "name": "pobu",
   "version": "1.0.0",
-  "description": "",
+  "description": "Easiest programming language for scripting",
   "main": "index.js",
   "scripts": {
     "build": "node-gyp rebuild",
