@@ -1,6 +1,7 @@
 #include <napi.h>
 #include <iostream>
 #include <Windows.h>
+#include <string>
 #include "func.hpp"
 
 Napi::Value Key_tap(const Napi::CallbackInfo &info) {
@@ -10,18 +11,27 @@ Napi::Value Key_tap(const Napi::CallbackInfo &info) {
         .ThrowAsJavaScriptException();
     return env.Null();
   }
-  if (!info[0].IsNumber()) {
-    Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+  int mappedKey;
+  if (info[0].IsString()) {
+    std::string arg0 = info[0].As<Napi::String>().Utf8Value();
+    mappedKey = MapVirtualKey(arg0[0], MAPVK_VK_TO_VSC);
+  } else if (info[0].IsNumber()) {
+    int arg0 = info[0].As<Napi::Number>();
+    mappedKey = arg0;
+  } else {
+    Napi::TypeError::New(env, "Argument should be number or string")
+        .ThrowAsJavaScriptException();
     return env.Null();
   }
-  int arg0 = info[0].As<Napi::Number>();
   INPUT ip;
   ip.type = INPUT_KEYBOARD;
-  ip.ki.wScan = 0;
   ip.ki.time = 0;
+  ip.ki.wVk = 0;
   ip.ki.dwExtraInfo = 0;
-  ip.ki.wVk = arg0;
-  ip.ki.dwFlags = 0;
+  ip.ki.dwFlags = KEYEVENTF_SCANCODE;
+  ip.ki.wScan = mappedKey;
+  SendInput(1, &ip, sizeof(INPUT));
+  ip.ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
   SendInput(1, &ip, sizeof(INPUT));
   return Napi::Boolean::New(env, true);
 }

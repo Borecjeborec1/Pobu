@@ -39,7 +39,7 @@ function parse(content) {
     if (lines[i].startsWith("//"))
       lines.splice(i, 1)
     lines[i] = lines[i].trim()
-    if (!lines[i]) { // enter meaning
+    if (!lines[i]) { // enters
       let block = lines.slice(i + 1, lines.length)
       if (!block.length) break
       parsedLines.unshift(lines.splice(i + 1, lines.length - i));
